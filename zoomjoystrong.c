@@ -5,6 +5,10 @@
 
 struct color current;
 
+SDL_Window *window = NULL;
+SDL_Renderer *renderer = NULL;
+SDL_Texture *texture = NULL;
+
 void setup(){
 	window = SDL_CreateWindow
 		(

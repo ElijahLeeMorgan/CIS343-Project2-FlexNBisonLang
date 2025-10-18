@@ -9,6 +9,10 @@ Elijah Morgan
 #include <stdlib.h>
 #include "zoomjoystrong.h"
 
+// Required functions.
+int yylex(void);
+void yyerror(const char *s);
+
 #define MAX_VARS 128
 
 typedef struct {
@@ -64,44 +68,44 @@ statement:
       VARIBLE '=' expr END_STATEMENT                            { printf("Assignment"); }
     | expr END_STATEMENT                                        { printf("Expression"); }
     | END_STATEMENT                                             { printf("\t\tEnd Statement\n"); }
-    | POINT expr ',' expr END_STATEMENT                         { 
-                                                                    if ($2 < 0 || $4 < 0) {
+    | POINT expr expr END_STATEMENT                             { 
+                                                                    if ($2 < 0 || $3 < 0) {
                                                                         fprintf(stderr, "Error: Point coordinates must be non-negative\n");
                                                                     } else {
                                                                         printf("Point");
-                                                                        point((int)$2, (int)$4); 
+                                                                        point((int)$2, (int)$3); 
                                                                     }
                                                                 }
-    | LINE expr ',' expr ',' expr ',' expr END_STATEMENT        { 
-                                                                    if ($2 < 0 || $4 < 0 || $6 < 0 || $8 < 0) {
+    | LINE expr expr expr expr END_STATEMENT                    { 
+                                                                    if ($2 < 0 || $3 < 0 || $4 < 0 || $5 < 0) {
                                                                         fprintf(stderr, "Error: Line coordinates must be non-negative\n");
                                                                     } else {
                                                                         printf("Line");
-                                                                        line((int)$2, (int)$4, (int)$6, (int)$8);
+                                                                        line((int)$2, (int)$3, (int)$4, (int)$5);
                                                                     }
                                                                 }
-    | CIRCLE expr ',' expr ',' expr END_STATEMENT               { 
-                                                                    if ($2 < 0 || $4 < 0 || $6 < 0) {
+    | CIRCLE expr expr expr END_STATEMENT                       { 
+                                                                    if ($2 < 0 || $3 < 0 || $4 < 0) {
                                                                         fprintf(stderr, "Error: Circle coordinates and radius must be non-negative\n");
                                                                     } else {
                                                                         printf("Circle");
-                                                                        circle((int)$2, (int)$4, (int)$6);
+                                                                        circle((int)$2, (int)$3, (int)$4);
                                                                     }
                                                                 }
-    | RECTANGLE expr ',' expr ',' expr ',' expr END_STATEMENT   { 
-                                                                    if ($2 < 0 || $4 < 0 || $6 < 0 || $8 < 0) {
+    | RECTANGLE expr expr expr expr END_STATEMENT               { 
+                                                                    if ($2 < 0 || $3 < 0 || $4 < 0 || $5 < 0) {
                                                                         fprintf(stderr, "Error: Rectangle coordinates and dimensions must be non-negative\n");
                                                                     } else {
                                                                         printf("Rectangle");
-                                                                        rectangle((int)$2, (int)$4, (int)$6, (int)$8);
+                                                                        rectangle((int)$2, (int)$3, (int)$4, (int)$5);
                                                                     }
                                                                 }
-    | SET_COLOR expr ',' expr ',' expr END_STATEMENT            { 
-                                                                    if ($2 < 0 || $2 > 255 || $4 < 0 || $4 > 255 || $6 < 0 || $6 > 255) {
+    | SET_COLOR expr expr expr END_STATEMENT                    { 
+                                                                    if ($2 < 0 || $2 > 255 || $3 < 0 || $3 > 255 || $4 < 0 || $4 > 255) {
                                                                         fprintf(stderr, "Error: Color values must be 0-255\n");
                                                                     } else {
                                                                         printf("Set color");
-                                                                        set_color((int)$2, (int)$4, (int)$6);
+                                                                        set_color((int)$2, (int)$3, (int)$4);
                                                                     }
                                                                 }
     | END                                                       { printf("End of Input\n"); finish(); exit(0); }
@@ -125,3 +129,13 @@ expr:
     ;
 
 %%
+
+void yyerror(const char *s) {
+    fprintf(stderr, "Error: %s\n", s);
+}
+
+int main(void) {
+    setup();
+    yyparse();
+    return 0;
+}
