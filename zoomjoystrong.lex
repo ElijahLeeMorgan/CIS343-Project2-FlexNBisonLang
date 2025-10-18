@@ -9,8 +9,6 @@ Elijah Morgan
 #include <string.h>
 %}
 
-//NOTE Keep your C code simple, logic is handled in Bison.
-// Flex is to words, as Bison is to understanding, as C is to action
 %%//pattern (regex)  action (C code)
 (?i:END)            {return END;}
 (?i:END_STATEMENT)  {return END_STATEMENT;}
