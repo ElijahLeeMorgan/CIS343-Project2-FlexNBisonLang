@@ -56,3 +56,10 @@ dkms.conf
 
 # Project info
 *.pdf
+
+# Bison output
+*.tab.h
+*.tab.c
+
+# Flex output
+*yy.c
