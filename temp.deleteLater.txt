@@ -1,0 +1,95 @@
+/*
+Flex file, written in Lex.
+CIS 343 - Project 2
+Elijah Morgan
+*/
+
+%{ // Definitions: vars, structs, etc.
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#define TRUE 1
+#define FALSE 0
+%}
+
+//NOTE Keep your C code simple, most of the logic is handled in Bison
+%%//pattern (regex)  action (C code)
+END             {exit(0)}
+
+END_STATEMENT   {;}
+
+POINT[ \t]+[0-9]+[ \t]+[0-9]+   { 
+    int x, y;
+    if (sscanf(yytext + strlen("POINT"), " %d %d", &x, &y) == 2) {
+        point(x,y);
+    } else {
+        printf("Error: Expected 2 INT values for POINT\n");
+        exit(1);
+    }
+}
+
+LINE[ \t]+[0-9]+[ \t]+[0-9]+[ \t]+[0-9]+[ \t]+[0-9]+ {
+    int x1, y1, x2, y2;
+    if (sscanf(yytext + strlen("LINE"), " %d %d %d %d", &x1, &y1, &x2, &y2) == 4) {
+        line(x1,y1,x2,y2);
+    } else {
+        printf("Error: Expected 4 INT values for LINE\n");
+        exit(1);
+    }
+}
+
+CIRCLE[ \t]+[0-9]+[ \t]+[0-9]+[ \t]+[0-9]+ {
+    int x, y, r;
+    if (sscanf(yytext + strlen("CIRCLE"), " %d %d %d", &x, &y, &r) == 3) {
+        circle(x,y,r);
+    } else {
+        printf("Error: Expected 3 INT values for CIRCLE\n");
+        exit(1);
+    }
+}
+
+RECTANGLE[ \t]+[0-9]+[ \t]+[0-9]+[ \t]+[0-9]+[ \t]+[0-9]+ {
+    int x, y, w, h;
+    if (sscanf(yytext + strlen("RECTANGLE"), " %d %d %d %d", &x, &y, &w, &h) == 4) {
+        rectangle(x,y,w,h);
+    } else {
+        printf("Error: Expected 4 INT values for RECTANGLE\n");
+        exit(1);
+    }
+}
+
+SET_COLOR[ \t]+[0-9]{1,3}[ \t]+[0-9]{1,3}[ \t]+[0-9]{1,3} { 
+    int r, g, b;
+    if (sscanf(yytext+9, " %d %d %d", &r, &g, &b) == 3) {
+        if (isValidColor(r, g, b) == FALSE) {
+            printf("Error: Colors must be within 0-255 to SET_COLOR. Ignoring color change.\n");
+        } else {
+            set_color(r, g, b);
+        }
+    } else {
+        printf("Error: Expected 3 integer values for SET_COLOR\n");
+        exit(1);
+    }
+}
+
+INT             {int }  // INT $a END_STATEMENT -> int a;
+
+FLOAT           {float }
+
+\$[A-Za-z0-9]1  {yytext[1]} // vars '$i'
+
+EQUALS          {=}
+
+PLUS            {+}
+
+MINUS           {-}
+
+MULT            {*}
+
+DIV             {/}
+
+[ \t\n]         {}
+
+^[\t\nA-Za-z0-9$]      {printf("Incorrect tokens!\n"); exit(1);}
+%%
+
