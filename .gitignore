@@ -62,4 +62,4 @@ dkms.conf
 *.tab.c
 
 # Flex output
-*yy.c
+*.yy.c
